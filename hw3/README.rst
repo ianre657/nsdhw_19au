@@ -65,6 +65,10 @@ On the latest NSD AMI, the grader will run the following commands:
   make bench
   diff performance.txt.orig performance.txt
 
+The grader may attempt to run the above commands with the environment variable
+``PRELOAD_MKL`` set, if ``validate.py`` doesn't pass without it.  Your work is
+considered pass in either case.
+
 ``make bench`` should reproduce the file ``performance.txt``.  The reproduced
 performance numbers may differ.  Grader will check if they are reasonable.
 

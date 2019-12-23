@@ -28,6 +28,56 @@ People often fall into **panic** when they meet dangers like fire or earthquake.
  - Calculate the number of people that die in the fire. 
  - Store the **best** traffic flow.
 
+## Project Structure
+
+Written with `C++` because it needs a large amount of computations. If it's hard to visualize the simulation with `C++`, `C++`(for large amount of computations) + `Pybind11` + `Python`(for user input processing and visualization).
+
+The program will need a **long loop** to update map and people's conditions, so a very efficient way to update conditions is necessary. It means that I need a well data structure that is easy to traverse, compute and update. Also, parallel programming is a possible strategy to improve performance.
+
+### Libraries
+ - Using [SDL](https://www.libsdl.org/) in `C++` or [PYGame](https://www.pygame.org/news) in `Python` for visualization.
+ - Using `SDL` in `C++` or `PYGame` in `Python` to get user inputs for constructing map.
+ - Using [class](http://www.cplusplus.com/doc/tutorial/classes/), [vector](http://www.cplusplus.com/reference/vector/vector/), [map](http://www.cplusplus.com/reference/map/map/?kw=map) and [pair](http://www.cplusplus.com/reference/utility/pair/?kw=pair) to build a nice data structure.
+ - Using [OpenMP](https://www.openmp.org/) for parallel programming or [OpenMP with Cython](https://gist.github.com/zed/2051661). I think [CUDA](https://devblogs.nvidia.com/even-easier-introduction-cuda/) is hard to implement because there are many `conditional operator` when updating people's conditions.
+
+### Data structure
+
+The following are some ideas about data structures that may be used. These only meet requirements but not optimal.
+
+```c++
+class Indoor_map
+{
+    vector<> indoor_map;  // A 2D map that stores the indoor traffic flow and crowd's position.
+    vector<vector<pair>> avg_moving_DIR_in_a_block;  // Crowd's average moving direction in a block. Assume the map is divided into 9 blocks, following is an example.
+    // |--||--||--|
+    //  <-  <-||->
+    // |--||--||--|
+    //  <-||->  ->
+    // |  ||--||--|
+    // |^^  <-  <-|
+    // |--||--||--|
+
+    vector<> fire_boundary;  // Fire's boundaries on the map.
+    vector<Person> crowd;
+}
+
+map<int16_t, vector<float>> panic_degree_to_crowd_behavior_weight  // A map that maps a person's panic degree to weights that bind with factors affecting human behavior.
+// Ex.
+// degree  :  moving_DIR_last_second  crowd_moving_DIR  avoid_obstacles  avoid_dangers
+//   1     :            0.4                  0.2              0.3            0.1
+//   2     :            0.3                  0.2              0.3            0.2   
+
+class Person
+{
+    int16_t panic_degree;
+    pair position;
+    pair moving_direction;
+    float moving_distance_last_few_seconds;  // A factor that affects panic_degree.
+    bool dead;  // dead or not
+}
+```
+
+
 ## To-Do List
 
  - [x] Find Term Project topic. ( 1 week )
